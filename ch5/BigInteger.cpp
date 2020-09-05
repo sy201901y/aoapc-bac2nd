@@ -43,32 +43,36 @@ struct BigInteger {
     return c;
   }
   BigInteger operator - () const {
-     s[0]=-s[0];
+     s.back()=-s.back();
   }
   BigInteger operator - (const BigInteger& b) const { 
     return (*this)+(-b);
   }
   BigInteger operator * (const BigInteger& b) const {
     BigInteger c;
-    for(BigInteger i=1;i<=b;i=i+1)c=c+b;
-    return c;
-  }
-  BigInteger operator * (const int& b) const {
-    BigInteger c;
-    for(int i=1;i<=b;i=i+1)c=c+b;
+    for(BigInteger i=1;i<=b;i=i+1)c=c+*this;
     return c;
   }
   BigInteger operator / (const BigInteger& b) const {
-    BigInteger c=*this;
-    for(BigInteger i=1;i<=b;i=i+1)c=c-b;
-    return c;
+    BigInteger c=*this,i;
+    for(i=0;c>0;i++)c-=b;
+    return i-1;
   }
-  BigInteger operator / (const int& b) const {
-    BigInteger c=*this;
-    for(int i=1;i<=b;i=i+1)c=c+b;
-    return c;
+  BigInteger operator % (const BigInteger& b) const {
+    return *this-(*this/b*b);
   }
+  bool operator < (const BigInteger& b) const {
+    if(s.size() != b.s.size())return s.size() < b.s.size();
+    for(int i = s.size()-1;i>=0;i--)
+      if(s[i] != b.s[i])return s[i] < b.s[i];
+    return false;
+  }
+  bool operator >(const BigInteger& b) const {return b < *this;}
+  bool operator >=(const BigInteger& b) const {return !(*this < b);}
+  bool operator <=(const BigInteger& b) const {return !(b < *this);}
+  bool operator ==(const BigInteger& b) const (return (b <= *this)&&(*this <= b);}
 };
+
 ostream& operator << (ostream &out, const BigInteger& x) {
   out << x.s.back();
   for(int i = x.s.size()-2; i >= 0; i--) {
